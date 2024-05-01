@@ -159,6 +159,8 @@ public class ToDoListApp {
                                 Main.email = eMail;
                                 System.out.println(eMail);
                                 System.out.println(Main.email);
+                                // Add the dashboard panel to the cardPanel
+                                cardPanel.add(Dashboard.createDashboardPanel(conn, stmt), "dashboard");
                                 cardLayout.show(cardPanel, "dashboard");
                             } else {
                                 System.out.println("Failed to login user.");
@@ -175,9 +177,6 @@ public class ToDoListApp {
 
         // Add the welcome panel to the cardPanel
         cardPanel.add(welcomePanel, "welcome");
-
-        // Add the dashboard panel to the cardPanel
-        cardPanel.add(Dashboard.createDashboardPanel(conn, stmt), "dashboard");
 
 
         // Add the cardPanel to the frame

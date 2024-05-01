@@ -11,6 +11,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Dashboard {
+
+    static JTable table = new JTable();
     public static JPanel createDashboardPanel(Connection conn, Statement stmt) {
         JPanel dashboardPanel = new JPanel();
         dashboardPanel.setLayout(new BorderLayout());
@@ -62,6 +64,7 @@ public class Dashboard {
                         int rowsAffected = preparedStatement.executeUpdate();
                         if (rowsAffected > 0) {
                             System.out.println("Task added successfully!!!");
+                            updateTableModel(conn);
                         } else {
                             System.out.println("Failed to add Task.");
                         }
@@ -76,7 +79,7 @@ public class Dashboard {
 
 
 //        Table logic
-        JTable table = new JTable();
+
 
         String sql = "SELECT task_name FROM user_task WHERE email = ?";
         try  {
@@ -109,30 +112,6 @@ public class Dashboard {
             throw new RuntimeException(e);
         }
 
-
-//        // Table to display tasks
-//        JTable table = new JTable();
-//        DefaultTableModel model = new DefaultTableModel(new Object[]{"Sr No.", "Task", "Delete"}, 0);
-//        table.setModel(model);
-//        System.out.println("Hey table");
-//
-//        // Fetch tasks from database
-//        String email = Main.email; // Assuming Main.email contains the current user's email
-//        String fetchSql = "SELECT task_name FROM user_task WHERE email = ?";
-//        try (PreparedStatement fetchStatement = conn.prepareStatement(fetchSql)) {
-//            System.out.println("Hey table2");
-//            fetchStatement.setString(1, email);
-//            ResultSet resultSet = fetchStatement.executeQuery();
-//            int srNo = 1;
-//            while (resultSet.next()) {
-//                String taskName = resultSet.getString("task_name");
-//                model.addRow(new Object[]{srNo++, taskName, "Delete"});
-//                System.out.println("SrNo." + " Task: " +taskName);
-//            }
-//        } catch (SQLException ex) {
-//            throw new RuntimeException(ex);
-//        }
-
         // Add the label to the top of the panel
         dashboardPanel.add(titleLabel, BorderLayout.PAGE_START);
 
@@ -145,5 +124,33 @@ public class Dashboard {
         System.out.println("Hey table");
 
         return dashboardPanel;
+    }
+
+
+//    Update Table Model after adding new task.
+    public static void updateTableModel(Connection conn) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0); // Clear the existing rows
+
+        String sql = "SELECT task_name FROM user_task WHERE email = ?";
+        try {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, Main.email); // fetching email of current user.
+
+            ResultSet rs = statement.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+
+            int srNo = 1;
+            while (rs.next()) {
+                String task = rs.getString(1);
+                String[] row = {String.valueOf(srNo++), task};
+                model.addRow(row);
+            }
+
+            // Set the model back to the JTable
+            table.setModel(model);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
