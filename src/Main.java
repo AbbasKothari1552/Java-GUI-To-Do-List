@@ -23,7 +23,8 @@ public class Main {
             e.printStackTrace();
         }
 
+        ToDoListApp obj = new ToDoListApp();
         // Gui opening.
-        ToDoListApp.createAndShowGUI(conn, stmt);
+        obj.createAndShowGUI(conn, stmt);
     }
 }

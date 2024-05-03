@@ -4,11 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
-public class ToDoListApp {
+public class ToDoListApp extends Component {
 
     private static JPanel cardPanel;
     private static CardLayout cardLayout;
-    public static void createAndShowGUI(Connection conn, Statement stmt) {
+    public void createAndShowGUI(Connection conn, Statement stmt) {
         JFrame frame = new JFrame("To-Do List App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(700, 500);
@@ -86,30 +86,39 @@ public class ToDoListApp {
                     String eMail = emailField.getText();
                     char[] passwordChars = password1Field.getPassword();
                     String password = new String(passwordChars);
+                    char[] passwordChars2 = password1Field.getPassword();
+                    String password_2 = new String(passwordChars2);
 
-                    // save the data to a file or database
-                    String sql = "INSERT INTO user_registration (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
-                    PreparedStatement preparedStatement = null;
-                    try {
-                        // Create a PreparedStatement for the INSERT query
-                        preparedStatement = conn.prepareStatement(sql);
-                        preparedStatement.setString(1, fName);
-                        preparedStatement.setString(2, lName);
-                        preparedStatement.setString(3, eMail);
-                        preparedStatement.setString(4, password);
-
-
-                        // Execute the query
-                        int rowsAffected = preparedStatement.executeUpdate();
-                        if (rowsAffected > 0) {
-                            System.out.println("User registered successfully!");
-                        } else {
-                            System.out.println("Failed to register user.");
-                        }
-                    } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
+                    if(!password.equals(password_2)) {
+                        JOptionPane.showMessageDialog(frame, "Password do not match. Re-register.");
                     }
+                    else {
 
+                        // save the data to a file or database
+                        String sql = "INSERT INTO user_registration (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
+                        PreparedStatement preparedStatement = null;
+                        try {
+                            // Create a PreparedStatement for the INSERT query
+                            preparedStatement = conn.prepareStatement(sql);
+                            preparedStatement.setString(1, fName);
+                            preparedStatement.setString(2, lName);
+                            preparedStatement.setString(3, eMail);
+                            preparedStatement.setString(4, password);
+
+
+                            // Execute the query
+                            int rowsAffected = preparedStatement.executeUpdate();
+                            if (rowsAffected > 0) {
+                                System.out.println("User registered successfully!");
+                                JOptionPane.showMessageDialog(frame, "User registered successfully!");
+                            } else {
+                                System.out.println("Failed to register user.");
+                                JOptionPane.showMessageDialog(frame, "Failed to register. Please try again.");
+                            }
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
                 }
             }
         });
@@ -155,15 +164,15 @@ public class ToDoListApp {
                         if (rs.next()) {
                             int count = rs.getInt(1);
                             if (count > 0) {
-                                System.out.println("User log-in successfully!");
                                 Main.email = eMail;
-                                System.out.println(eMail);
-                                System.out.println(Main.email);
+                                System.out.println("User log-in successfully!");
+                                JOptionPane.showMessageDialog(frame, "User log-in successfully!");
                                 // Add the dashboard panel to the cardPanel
                                 cardPanel.add(Dashboard.createDashboardPanel(conn, stmt), "dashboard");
                                 cardLayout.show(cardPanel, "dashboard");
                             } else {
                                 System.out.println("Failed to login user.");
+                                JOptionPane.showMessageDialog(frame, "Failed to login user.Please try again");
                             }
                         }
                     }
