@@ -43,7 +43,7 @@ public class ToDoListApp extends Component {
         constraints.anchor = GridBagConstraints.LINE_END; // Align the component to the end of the line
 
 
-        // Registeration Button
+        // Registration Button
         JButton registerButton = new JButton("Register");
         registerButton.setPreferredSize(new Dimension(100, 30)); // Set preferred size (width, height) for the button
         registerButton.addActionListener(new ActionListener() {
@@ -57,8 +57,8 @@ public class ToDoListApp extends Component {
                 JTextField firstNameField = new JTextField();
                 JLabel lastName = new JLabel("Last Name:");
                 JTextField lastNameField = new JTextField();
-                JLabel email = new JLabel("Email:");
-                JTextField emailField = new JTextField();
+                JLabel username = new JLabel("Username:");
+                JTextField usernamefield = new JTextField();
                 JLabel password1 = new JLabel("Enter password:");
                 JPasswordField password1Field = new JPasswordField();
                 JLabel password2 = new JLabel("Re-enter Password:");
@@ -69,8 +69,8 @@ public class ToDoListApp extends Component {
                 registrationPanel.add(firstNameField);
                 registrationPanel.add(lastName);
                 registrationPanel.add(lastNameField);
-                registrationPanel.add(email);
-                registrationPanel.add(emailField);
+                registrationPanel.add(username);
+                registrationPanel.add(usernamefield);
                 registrationPanel.add(password1);
                 registrationPanel.add(password1Field);
                 registrationPanel.add(password2);
@@ -83,7 +83,7 @@ public class ToDoListApp extends Component {
                     // Process registration data
                     String fName = firstNameField.getText();
                     String lName = lastNameField.getText();
-                    String eMail = emailField.getText();
+                    String uName = usernamefield.getText();
                     char[] passwordChars = password1Field.getPassword();
                     String password = new String(passwordChars);
                     char[] passwordChars2 = password1Field.getPassword();
@@ -95,14 +95,13 @@ public class ToDoListApp extends Component {
                     else {
 
                         // save the data to a file or database
-                        String sql = "INSERT INTO user_registration (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
-                        PreparedStatement preparedStatement = null;
+                        String sql = "INSERT INTO user_registration (first_name, last_name, username, password) VALUES (?, ?, ?, ?)";
                         try {
                             // Create a PreparedStatement for the INSERT query
-                            preparedStatement = conn.prepareStatement(sql);
+                            PreparedStatement preparedStatement = conn.prepareStatement(sql);
                             preparedStatement.setString(1, fName);
                             preparedStatement.setString(2, lName);
-                            preparedStatement.setString(3, eMail);
+                            preparedStatement.setString(3, uName);
                             preparedStatement.setString(4, password);
 
 
@@ -127,58 +126,54 @@ public class ToDoListApp extends Component {
 //        Login Button.
         JButton loginButton = new JButton("Login");
         loginButton.setPreferredSize(new Dimension(120, 30)); // Set the preferred size
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Create a custom panel for the login form
-                JPanel loginPanel = new JPanel(new GridLayout(15, 5));
+        loginButton.addActionListener(e -> {
+            // Create a custom panel for the login form
+            JPanel loginPanel = new JPanel(new GridLayout(15, 5));
 
-                // Declare fields
-                JLabel email = new JLabel("Email:");
-                JTextField emailField = new JTextField();
-                JLabel password1 = new JLabel("Enter password:");
-                JPasswordField password1Field = new JPasswordField();
+            // Declare fields
+            JLabel user = new JLabel("Username:");
+            JTextField usernameField = new JTextField();
+            JLabel password1 = new JLabel("Enter password:");
+            JPasswordField password1Field = new JPasswordField();
 //                Add Fields
-                loginPanel.add(email);
-                loginPanel.add(emailField);
-                loginPanel.add(password1);
-                loginPanel.add(password1Field);
+            loginPanel.add(user);
+            loginPanel.add(usernameField);
+            loginPanel.add(password1);
+            loginPanel.add(password1Field);
 
-                int result = JOptionPane.showConfirmDialog(null, loginPanel, "login Form", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                if (result == JOptionPane.OK_OPTION) {
-                    String eMail = emailField.getText();
-                    char[] passwordChars = password1Field.getPassword();
-                    String password = new String(passwordChars);
+            int result = JOptionPane.showConfirmDialog(null, loginPanel, "login Form", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String username = usernameField.getText();
+                char[] passwordChars = password1Field.getPassword();
+                String password = new String(passwordChars);
 
-//                    prepare sql query to check the user registeration.
-                    String sql = "SELECT count(*) FROM user_registration WHERE email = ? AND password = ?";
-                    PreparedStatement preparedStatement = null;
-                    try {
-                        // Create a PreparedStatement for the INSERT query
-                        preparedStatement = conn.prepareStatement(sql);
-                        preparedStatement.setString(1, eMail);
-                        preparedStatement.setString(2, password);
+//                    prepare sql query to check the user registration.
+                String sql = "SELECT count(*) FROM user_registration WHERE username = ? AND password = ?";
+                try {
+                    // Create a PreparedStatement for the INSERT query
+                    PreparedStatement preparedStatement = conn.prepareStatement(sql);
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setString(2, password);
 
-                        // Execute the query
-                        ResultSet rs = preparedStatement.executeQuery();
-                        if (rs.next()) {
-                            int count = rs.getInt(1);
-                            if (count > 0) {
-                                Main.email = eMail;
-                                System.out.println("User log-in successfully!");
-                                JOptionPane.showMessageDialog(frame, "User log-in successfully!");
-                                // Add the dashboard panel to the cardPanel
-                                cardPanel.add(Dashboard.createDashboardPanel(conn, stmt), "dashboard");
-                                cardLayout.show(cardPanel, "dashboard");
-                            } else {
-                                System.out.println("Failed to login user.");
-                                JOptionPane.showMessageDialog(frame, "Failed to login user.Please try again");
-                            }
+                    // Execute the query
+                    ResultSet rs = preparedStatement.executeQuery();
+                    if (rs.next()) {
+                        int count = rs.getInt(1);
+                        if (count > 0) {
+                            Main.username = username;
+                            System.out.println("User log-in successfully!");
+                            JOptionPane.showMessageDialog(frame, "User log-in successfully!");
+                            // Add the dashboard panel to the cardPanel
+                            cardPanel.add(Dashboard.createDashboardPanel(conn), "dashboard");
+                            cardLayout.show(cardPanel, "dashboard");
+                        } else {
+                            System.out.println("Failed to login user.");
+                            JOptionPane.showMessageDialog(frame, "Failed to login user.Please try again");
                         }
                     }
-                    catch (SQLException ex) {
-                        throw new RuntimeException(ex);
-                    }
+                }
+                catch (SQLException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
         });
@@ -211,7 +206,7 @@ public class ToDoListApp extends Component {
                     }
                     System.out.println("Connection Closed!!");
                 } catch (SQLException ex) {
-                    ex.printStackTrace();
+                    System.out.println(ex);
                 }
             }
         });

@@ -8,12 +8,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 public class Dashboard {
     static JTable table = new JTable();
 
-    public static JPanel createDashboardPanel(Connection conn, Statement stmt) {
+    public static JPanel createDashboardPanel(Connection conn) {
         JPanel dashboardPanel = new JPanel();
         dashboardPanel.setLayout(new BorderLayout());
         dashboardPanel.setSize(700, 500);
@@ -45,13 +43,13 @@ public class Dashboard {
             if (result == JOptionPane.OK_OPTION) {
                 // Process form data
                 String tName = taskNameField.getText();
-                String email = Main.email;
+                String username = Main.username;
 
                 // insert task. query
-                String sql = "INSERT INTO user_task (task_name,email) VALUES (?, ?)";
+                String sql = "INSERT INTO user_task (task_name,username) VALUES (?, ?)";
                 try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
                     preparedStatement.setString(1, tName);
-                    preparedStatement.setString(2, email);
+                    preparedStatement.setString(2, username);
 
                     // Execute the query
                     int rowsAffected = preparedStatement.executeUpdate();
@@ -68,9 +66,9 @@ public class Dashboard {
         });
 
         // Table logic
-        String sql = "SELECT id,task_name FROM user_task WHERE email = ?";
+        String sql = "SELECT id,task_name FROM user_task WHERE username = ?";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
-            statement.setString(1, Main.email); // fetching email of current user.
+            statement.setString(1, Main.username); // fetching email of current user.
             try (ResultSet rs = statement.executeQuery()) {
                 DefaultTableModel model = new DefaultTableModel(new Object[][]{}, new String[]{"ID", "Task", "Actions"});
                 table.setModel(model);
@@ -110,9 +108,9 @@ public class Dashboard {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0); // Clear the existing rows
 
-        String sql = "SELECT id, task_name FROM user_task WHERE email = ?";
+        String sql = "SELECT id, task_name FROM user_task WHERE username = ?";
         try (PreparedStatement statement = conn.prepareStatement(sql)) {
-            statement.setString(1, Main.email); // fetching email of current user.
+            statement.setString(1, Main.username); // fetching email of current user.
 
             try (ResultSet rs = statement.executeQuery()) {
                 while (rs.next()) {
@@ -153,7 +151,7 @@ public class Dashboard {
         private final JButton deleteButton;
         private String clickedButton;
         private int selectedRow;
-        private final Connection conn; // Add this field
+        private final Connection conn;
 
         public ButtonEditor(JCheckBox checkBox, Connection conn) {
             super(checkBox);

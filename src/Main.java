@@ -5,7 +5,7 @@ import java.sql.Statement;
 
 public class Main {
 
-    public static String email;
+    public static String username;
     public static void main(String[] args) {
         Connection conn = null;
         Statement stmt = null;
